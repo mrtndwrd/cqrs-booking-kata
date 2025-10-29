@@ -1,5 +1,7 @@
+from abc import ABC
 from dataclasses import dataclass
 from datetime import date
+from typing import Protocol
 
 
 @dataclass(eq=True, frozen=True)
@@ -15,18 +17,21 @@ class Room:
     room_name: str
 
 
+class Repository(Protocol):
+    def load_all(self) -> set[Room]:
+        ...
+
+
 class QueryService:
-    def __init__(self, rooms=[], bookings=[]):
-        self.rooms = rooms
+    def __init__(self, rooms=[], bookings=[], room_repository: Repository = None):
+        if room_repository:
+            self.rooms = room_repository.load_all()
+        else:
+            self.rooms = rooms
         self.bookings = bookings
 
-    def unbooked_room_generator(self):
-        for room in self.rooms:
-            for booking in self.bookings:
-                if booking.room_name != room.room_name:
-                    yield room
-
     def free_rooms(self, arrival_date, departure_date):
-        if self.bookings:
-            return set(self.unbooked_room_generator())
-        return set(self.rooms)
+        return {room for room in self.rooms if room.room_name not in self._unavailable_rooms()}
+
+    def _unavailable_rooms(self):
+        return {booking.room_name for booking in self.bookings}
