@@ -1,6 +1,3 @@
-def main():
-    print("Hello from cqrs-booking!")
-
-
-if __name__ == "__main__":
-    main()
+class QueryService:
+    def free_rooms(self, arrival_date, departure_date):
+        return set()
