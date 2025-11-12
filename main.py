@@ -17,15 +17,19 @@ class Room:
     room_name: str
 
 
-class Repository(Protocol):
+class RoomRepository(Protocol):
     def load_all(self) -> set[Room]:
+        ...
+
+class BookingRepository(Protocol):
+    def load_all(self) -> list[Booking]:
         ...
 
 
 class QueryService:
-    def __init__(self, bookings=[], room_repository: Repository = None):
+    def __init__(self, booking_repository: BookingRepository, room_repository: RoomRepository = None):
         self.room_repository = room_repository
-        self.bookings = bookings
+        self.bookings = booking_repository.load_all()
 
     def free_rooms(self, arrival_date, departure_date):
         all_rooms = self.room_repository.load_all()
