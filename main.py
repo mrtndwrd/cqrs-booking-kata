@@ -17,21 +17,23 @@ class Room:
     room_name: str
 
 
-class Repository(Protocol):
+class RoomRepository(Protocol):
     def load_all(self) -> set[Room]:
+        ...
+
+class BookingRepository(Protocol):
+    def load_all(self) -> list[Booking]:
         ...
 
 
 class QueryService:
-    def __init__(self, rooms=[], bookings=[], room_repository: Repository = None):
-        if room_repository:
-            self.rooms = room_repository.load_all()
-        else:
-            self.rooms = rooms
-        self.bookings = bookings
+    def __init__(self, booking_repository: BookingRepository, room_repository: RoomRepository = None):
+        self.room_repository = room_repository
+        self.bookings = booking_repository.load_all()
 
     def free_rooms(self, arrival_date, departure_date):
-        return {room for room in self.rooms if room.room_name not in self._unavailable_rooms()}
+        all_rooms = self.room_repository.load_all()
+        return {room for room in all_rooms if room.room_name not in self._unavailable_rooms()}
 
     def _unavailable_rooms(self):
         return {booking.room_name for booking in self.bookings}

@@ -15,10 +15,11 @@ We will split our code in read and write code to really live this pattern.
 
 We want to make a booking solution for one hotel.
 
-The first 2 user stories are :
+The first 3 user stories are :
 
 - As a user I want to see all free rooms.
 - As a user I want to book a room.
+- As a user I want to see all bookings.
 
 They want to use the CQRS pattern. To do that we will have :
 
